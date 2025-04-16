@@ -1,0 +1,134 @@
+type BaseFlavor {
+  original_name: String!
+  vcpus: String!
+  ram: String!
+  rub_month: String!
+}
+
+type Disk {
+  disk_id: String!
+  size_gb: Int!
+  bootable: Boolean!
+  status: String!
+  instances: [Instance!]!
+  image: Image
+}
+
+union Flavor = BaseFlavor | HiFreqFlavor | PremiumFlavor | ProFlavor
+
+type Network {
+  network_id: ID!
+  network_name: String!
+  cidr: String!
+  gateway_ip: String!
+  is_public: Boolean!
+  ipV4: String!
+  availability_zone: String!
+  region: String!
+  security_group_id: String!
+}
+
+type HiFreqFlavor {
+  original_name: String!
+  vcpus: String!
+  ram: String!
+  rub_month: String!
+}
+
+type Image {
+  image_id: String!
+  label: String!
+  osVersions: [ImageVersion!]!
+  cpu: MinRec!
+  ram_gb: MinRec!
+  disk_gb: MinRec!
+}
+
+type ImageVersion {
+  versionName: String!
+  imageVerId: String!
+}
+
+type Instance {
+  instance_id: String!
+  project_id: String!
+  name: String!
+  status: String!
+  created: String!
+  updated: String!
+  key_name: String!
+  flavor: Flavor!
+  locked: Boolean!
+  loading: Boolean!
+  power_state: String!
+  ipV4: String!
+  attachedDisks: [Disk!]!
+  attachedNetworks: [Network!]!
+}
+
+
+input NewInstanceInput {
+  id: ID!
+  hostname: String!
+  region: String!
+  instanceType: String!
+  imageId: String!
+  state: String!
+}
+
+
+type KVStringListOfFlavor {
+  key: String!
+  value: [Flavor!]!
+}
+
+type MinRec {
+  min: Int!
+  rec: Int!
+}
+
+type Mutation {
+  deleteInstance(instance_id: String!): Boolean!
+  createInstance(input: NewInstanceInput!): Instance!
+}
+
+type PremiumFlavor {
+  original_name: String!
+  vcpus: String!
+  ram: String!
+  rub_month: String!
+}
+
+type ProFlavor {
+  original_name: String!
+  vcpus: String!
+  ram: String!
+  rub_month: String!
+}
+
+type User @key(fields: "user_id") {
+  user_id: ID! 
+  user_name: String! 
+  company_id: String! 
+  sshKeys: [SSHKey]
+}
+
+type SSHKey {
+  name: String!
+  publicKey: String!
+  instances: [Instance!]
+}
+
+type Query {
+  getInstanceList(project_id: String!): [Instance!]!
+  getInstanceItem(instance_id: String!): Instance
+  getFlavorList: [KVStringListOfFlavor!]!
+  getImageList: [Image!]!
+  getSSHKeys: [SSHKey!]!
+  getNetworkList: [Network!]!
+}
+
+
+type Subscription {
+  instancesUpdates: [Instance!]!
+}
